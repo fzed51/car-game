@@ -9,11 +9,11 @@ export class Sensor {
   rayLength: number;
   raySpread: number;
   rays: Segment[];
-  readings: Cross[];
+  readings: (Cross | null)[];
 
   constructor(car: Car) {
     this.car = car;
-    this.rayCount = 7;
+    this.rayCount = 5;
     this.rayLength = 150;
     this.raySpread = (Math.PI * 2) / 3;
 
@@ -23,9 +23,9 @@ export class Sensor {
 
   update(roadBorders: Segment[], traffic: Boxable[]) {
     this.castRays();
-    this.readings = this.rays
-      .map((ray) => this.getReading(ray, roadBorders, traffic))
-      .filter((r) => r !== null) as Cross[];
+    this.readings = this.rays.map((ray) =>
+      this.getReading(ray, roadBorders, traffic)
+    );
   }
 
   private getReading(ray: Segment, roadBorders: Segment[], traffic: Boxable[]) {
@@ -60,13 +60,11 @@ export class Sensor {
     this.rays = [];
     for (let i = 0; i < this.rayCount; i++) {
       const rayAngle =
-        Math.PI / 2 +
         lerp(
           this.raySpread / 2,
           -this.raySpread / 2,
           this.rayCount == 1 ? 0.5 : i / (this.rayCount - 1)
-        ) +
-        this.car.angle;
+        ) + this.car.angle;
 
       this.rays.push(
         new Segment(
@@ -78,25 +76,29 @@ export class Sensor {
   }
 
   draw(ctx: CanvasRenderingContext2D) {
-    for (let i = 0; i < this.rayCount; i++) {
+    this.rays.forEach((ray, i) => {
       let end = this.rays[i].b;
-      if (this.readings[i]) {
-        end = Point.hydrate(this.readings[i]);
-      }
-
+      const read = this.readings[i];
       ctx.beginPath();
       ctx.lineWidth = 2;
       ctx.strokeStyle = "yellow";
-      ctx.moveTo(this.rays[i].a.x, this.rays[i].a.y);
-      ctx.lineTo(end.x, end.y);
-      ctx.stroke();
+      ctx.moveTo(ray.a.x, -ray.a.y);
 
-      ctx.beginPath();
-      ctx.lineWidth = 2;
-      ctx.strokeStyle = "black";
-      ctx.moveTo(this.rays[i].b.x, this.rays[i].b.y);
-      ctx.lineTo(end.x, end.y);
+      if (read !== null) {
+        end = Point.hydrate(read);
+        ctx.lineTo(end.x, -end.y);
+        ctx.stroke();
+
+        ctx.beginPath();
+        ctx.lineWidth = 2;
+        ctx.strokeStyle = "black";
+        ctx.moveTo(end.x, -end.y);
+        ctx.lineTo(ray.b.x, -ray.b.y);
+        ctx.stroke();
+      } else {
+        ctx.lineTo(end.x, -end.y);
+      }
       ctx.stroke();
-    }
+    });
   }
 }

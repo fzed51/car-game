@@ -63,5 +63,12 @@ export class Road {
       ctx.lineTo(border.b.x, border.b.y);
       ctx.stroke();
     });
+    for (let d = -1000; d <= 100000; d += 250) {
+      ctx.beginPath();
+      ctx.fillStyle = "black";
+      ctx.textBaseline = "middle";
+      ctx.font = "bold 32px Arial";
+      ctx.fillText(String(d), 50, -d);
+    }
   }
 }

@@ -32,13 +32,39 @@ export const getIntersection = (
 };
 
 export const polysIntersect = (poly1: Segment[], poly2: Segment[]): boolean => {
+  let out = false;
   poly1.forEach((segment1) => {
     poly2.forEach((segment2) => {
       const cross = segment1.Intersect(segment2);
       if (cross) {
-        return true;
+        out = true;
       }
     });
   });
-  return false;
+  return out;
+};
+
+export const formatPx = (v: number): string => {
+  const round = Math.round(v);
+  const isRound = round !== v;
+  return (isRound ? "~" : "") + round.toString() + "px";
+};
+
+export const formatDeg = (a: number): string => {
+  a = (a * 180) / Math.PI;
+  const round = Math.round(a);
+  const isRound = round !== a;
+  return (isRound ? "~" : "") + round.toString() + "°";
+};
+
+export const formatRad = (a: number): string => {
+  a = a / Math.PI;
+  return a.toFixed(2) + "π";
+};
+
+export const between = (min: number, v: number, max: number): boolean => {
+  if (v <= min || v >= max) {
+    return false;
+  }
+  return true;
 };

@@ -85,8 +85,6 @@ export class Level {
   static hydrate(data: Neurons): Level {
     const level = new Level(0, 0);
     level.biases = data.biases;
-    level.inputs = data.inputs;
-    level.outputs = data.outputs;
     level.weights = data.weights;
     return level;
   }
