@@ -14,5 +14,8 @@
     "eslint": "^8.48.0",
     "typescript": "^5.0.2",
     "vite": "^4.4.5"
+  },
+  "dependencies": {
+    "deep-equal": "^2.2.2"
   }
 }

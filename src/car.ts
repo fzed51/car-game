@@ -27,7 +27,7 @@ export class Car implements Boxable {
     width: number,
     height: number,
     controlType: ControlType,
-    maxSpeed = 4
+    maxSpeed = 3.5
   ) {
     // console.debug("Car::constructor", {
     //   x,
@@ -54,7 +54,7 @@ export class Car implements Boxable {
       this.sensor = new Sensor(this);
       this.brain = new NeuralNetwork([
         this.sensor.rayCount,
-        Math.ceil(this.sensor.rayCount * 1.4),
+        Math.ceil(this.sensor.rayCount * 1.2),
         4,
       ]);
     }
@@ -72,8 +72,8 @@ export class Car implements Boxable {
   }
 
   update(roadBorders: Segment[], traffic: Boxable[]) {
-    this.move();
     if (!this.damaged) {
+      this.move();
       this.polygon = this.createPolygon();
       this.damaged = this.assessDamage(roadBorders, traffic);
     }

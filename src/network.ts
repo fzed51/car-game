@@ -12,9 +12,9 @@ export class NeuralNetwork {
   }
 
   static feedForward(givenInputs: number[], network: NeuralNetwork) {
-    let outputs = Level.feedForward(givenInputs, network.levels[0]);
+    let outputs = network.levels[0].calculate(givenInputs);
     for (let i = 1; i < network.levels.length; i++) {
-      outputs = Level.feedForward(outputs, network.levels[i]);
+      outputs = network.levels[i].calculate(outputs);
     }
     return outputs;
   }
@@ -40,16 +40,14 @@ export class NeuralNetwork {
     return this.levels.map((l) => l.backup());
   }
 
-  static hydrate(data: Levels): NeuralNetwork {
-    const network = new NeuralNetwork([]);
-    network.levels = data.map((neurons) => Level.hydrate(neurons));
-    return network;
+  load(data: Levels) {
+    this.levels.map((l, i) => l.load(data[i]));
   }
 }
 
 export interface Neurons {
-  inputs: number[];
-  outputs: number[];
+  // inputs: number[];
+  // outputs: number[];
   biases: number[];
   weights: number[][];
 }
@@ -76,17 +74,13 @@ export class Level {
   backup(): Neurons {
     return {
       biases: [...this.biases],
-      inputs: [...this.inputs],
-      outputs: [...this.outputs],
       weights: [...this.weights.map((weight) => [...weight])],
     };
   }
 
-  static hydrate(data: Neurons): Level {
-    const level = new Level(0, 0);
-    level.biases = data.biases;
-    level.weights = data.weights;
-    return level;
+  load(data: Neurons) {
+    this.biases = data.biases;
+    this.weights = data.weights;
   }
 
   private static randomize(level: Level) {
@@ -101,24 +95,24 @@ export class Level {
     }
   }
 
-  static feedForward(givenInputs: number[], level: Level) {
-    for (let i = 0; i < level.inputs.length; i++) {
-      level.inputs[i] = givenInputs[i];
+  calculate(input: number[]): number[] {
+    for (let i = 0; i < this.inputs.length; i++) {
+      this.inputs[i] = input[i];
     }
 
-    for (let i = 0; i < level.outputs.length; i++) {
+    for (let i = 0; i < this.outputs.length; i++) {
       let sum = 0;
-      for (let j = 0; j < level.inputs.length; j++) {
-        sum += level.inputs[j] * level.weights[j][i];
+      for (let j = 0; j < this.inputs.length; j++) {
+        sum += this.inputs[j] * this.weights[j][i];
       }
 
-      if (sum > level.biases[i]) {
-        level.outputs[i] = 1;
+      if (sum > this.biases[i]) {
+        this.outputs[i] = 1;
       } else {
-        level.outputs[i] = 0;
+        this.outputs[i] = 0;
       }
     }
 
-    return level.outputs;
+    return this.outputs;
   }
 }
