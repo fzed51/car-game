@@ -54,6 +54,7 @@ export class Car implements Boxable {
       this.sensor = new Sensor(this);
       this.brain = new NeuralNetwork([
         this.sensor.rayCount,
+        Math.ceil(this.sensor.rayCount * 1.4),
         Math.ceil(this.sensor.rayCount * 1.2),
         4,
       ]);

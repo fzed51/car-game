@@ -1,4 +1,5 @@
 import { lerp } from "./mathematical";
+import { randomNumber } from "./random";
 
 export type Levels = Neurons[];
 
@@ -20,20 +21,28 @@ export class NeuralNetwork {
   }
 
   static mutate(network: NeuralNetwork, amount = 1) {
+    console.group("mutate");
+    console.log(network.levels[0].backup());
     network.levels.forEach((level) => {
       for (let i = 0; i < level.biases.length; i++) {
-        level.biases[i] = lerp(level.biases[i], Math.random() * 2 - 1, amount);
+        level.biases[i] = lerp(
+          level.biases[i],
+          randomNumber({ min: -1, max: 1 }),
+          amount
+        );
       }
-      for (let i = 0; i < level.weights.length; i++) {
-        for (let j = 0; j < level.weights[i].length; j++) {
-          level.weights[i][j] = lerp(
-            level.weights[i][j],
-            Math.random() * 2 - 1,
+      for (let j = 0; j < level.weights.length; j++) {
+        for (let k = 0; k < level.weights[j].length; k++) {
+          level.weights[j][k] = lerp(
+            level.weights[j][k],
+            randomNumber({ min: -1, max: 1 }),
             amount
           );
         }
       }
     });
+    console.log(network.levels[0].backup());
+    console.groupEnd();
   }
 
   backup(): Levels {
@@ -41,7 +50,7 @@ export class NeuralNetwork {
   }
 
   load(data: Levels) {
-    this.levels.map((l, i) => l.load(data[i]));
+    this.levels.forEach((level, i) => level.load(data[i]));
   }
 }
 
@@ -79,19 +88,19 @@ export class Level {
   }
 
   load(data: Neurons) {
-    this.biases = data.biases;
-    this.weights = data.weights;
+    this.biases = [...data.biases];
+    this.weights = [...data.weights.map(x => [...x])];
   }
 
   private static randomize(level: Level) {
     for (let i = 0; i < level.inputs.length; i++) {
       for (let j = 0; j < level.outputs.length; j++) {
-        level.weights[i][j] = Math.random() * 2 - 1;
+        level.weights[i][j] = randomNumber({ min: -1, max: 1 });
       }
     }
 
     for (let i = 0; i < level.biases.length; i++) {
-      level.biases[i] = Math.random() * 2 - 1;
+      level.biases[i] = randomNumber({ min: -1, max: 1 });
     }
   }
 

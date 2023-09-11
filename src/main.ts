@@ -9,19 +9,22 @@ import { Visualizer } from "./visualizer";
 // import { Visualizer } from "./visualizer";
 
 const carCanvas = $("#carCanvas") as HTMLCanvasElement;
-carCanvas.width = 300;
+carCanvas.width = 250;
 const carCtx = carCanvas.getContext("2d");
 
 const networkCanvas = $<HTMLCanvasElement>("#networkCanvas");
 let networkCtx: CanvasRenderingContext2D | null = null;
 if (networkCanvas !== null) {
-  networkCanvas.width = 300;
+  networkCanvas.width = 700;
   networkCtx = networkCanvas.getContext("2d") as CanvasRenderingContext2D;
 }
 
-const road = new Road(carCanvas.width / 2, carCanvas.width * 0.9);
 
+let nAnimate = 2250;
 const N = 1000;
+
+const road = new Road(carCanvas.width / 2, carCanvas.width * 0.8);
+
 // const cars = generatePlayableCar()
 const cars = generateCars(N);
 let bestCar = cars[0];
@@ -33,7 +36,7 @@ if (localStorage.getItem("bestBrain")) {
     cars.forEach((car, i) => {
       car.brain && car.brain.load(data);
       if (i != 0) {
-        car.brain && NeuralNetwork.mutate(car.brain, 0.1);
+        car.brain && NeuralNetwork.mutate(car.brain, 0.15);
       }
     });
   }
@@ -56,7 +59,7 @@ $("#btn-discard")?.addEventListener("click", discard);
 function generateCars(N: number) {
   const cars = [];
   for (let i = 0; i < N; i++) {
-    cars.push(new Car(road.getLaneCenter(1), 0, 30, 50, "AI"));
+    cars.push(new Car(road.getLaneCenter(1), 0, 30, 50, "AI", 4));
   }
   return cars;
 }
@@ -86,7 +89,6 @@ function generateTrafic(N: number) {
 //   });
 // }, 20000);
 
-let nAnimate = 1000;
 animate();
 function animate(/*time = 0*/) {
   traffic.forEach((car) => car.update([], []));
@@ -123,7 +125,9 @@ function animate(/*time = 0*/) {
       carCtx.fillText(
         cars.filter((c) => !c.damaged).length.toString() +
           " / " +
-          cars.filter((c) => c.position.y > bestCar.position.y - 250).length.toString(),
+          cars
+            .filter((c) => c.position.y > bestCar.position.y - 250)
+            .length.toString(),
         bestCar.position.x,
         -bestCar.position.y + 50
       );

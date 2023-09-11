@@ -13,9 +13,9 @@ export class Sensor {
 
   constructor(car: Car) {
     this.car = car;
-    this.rayCount = 5;
-    this.rayLength = 150;
-    this.raySpread = (Math.PI * 2) / 3;
+    this.rayCount = 9;
+    this.rayLength = 200;
+    this.raySpread = (Math.PI * 6) / 4;
 
     this.rays = [];
     this.readings = [];
@@ -65,11 +65,18 @@ export class Sensor {
           -this.raySpread / 2,
           this.rayCount == 1 ? 0.5 : i / (this.rayCount - 1)
         ) + this.car.angle;
-
+      const ratioLength =
+        lerp(
+          -Math.PI / 2,
+          Math.PI / 2,
+          this.rayCount == 1 ? 0.5 : i / (this.rayCount - 1)
+        );
+      const length =
+        this.rayLength *2/3 + ((this.rayLength ) /3) * Math.cos(ratioLength);
       this.rays.push(
         new Segment(
           this.car.position,
-          this.car.position.add(Point.polar(rayAngle, this.rayLength))
+          this.car.position.add(Point.polar(rayAngle, length))
         )
       );
     }
