@@ -21,7 +21,7 @@ if (networkCanvas !== null) {
 
 
 let nAnimate = 2250;
-const N = 1000;
+const N = 500;
 
 const road = new Road(carCanvas.width / 2, carCanvas.width * 0.8);
 
@@ -110,14 +110,14 @@ function animate(/*time = 0*/) {
       carCtx.save();
       carCtx.translate(
         0,
-        carCanvas.height * (bestCar.speed / 18 + 0.5) + bestCar.position.y
+        carCanvas.height * 0.7 /* * (bestCar.speed / 18 + 0.5) */ + bestCar.position.y
       );
 
       road.draw(carCtx);
 
-      traffic.forEach((car) => car.draw(carCtx, "red"));
+      traffic.forEach((car) => Math.abs(car.position.y - bestCar.position.y) < 2000 && car.draw(carCtx, "red"));
       carCtx.globalAlpha = 0.2;
-      cars.forEach((car) => car !== bestCar && car.draw(carCtx, "blue"));
+      cars.forEach((car) => Math.abs(car.position.y - bestCar.position.y) < 2000 && car !== bestCar && car.draw(carCtx, "blue"));
       carCtx.globalAlpha = 1;
       bestCar.draw(carCtx, "blue", true);
 
